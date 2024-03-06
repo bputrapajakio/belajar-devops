@@ -15,6 +15,17 @@ jobs:
         echo "$SSH_KEY" > keynew.pem
         chmod 400 keynew.pem
         ssh-keygen -t rsa -C "$(hostname)" -f "$HOME/.ssh/id_rsa" -P ""
+        'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client wget gnupg -y )'
+        wget -qO- https://get.docker.com/gpg | apt-key add -
+        eval $(ssh-agent -s)
+        echo "$SSH_KEY" | tr -d '\r' | ssh-add -
+        mkdir -p ~/.ssh
+        touch ~/.ssh/config
+        touch ~/.ssh/known_hosts
+        chmod -R 400 ~/.ssh
+        ssh-keyscan 110.239.94.146 >> ~/.ssh/known_hosts
+        '[[ -f /.dockerinit ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
       
