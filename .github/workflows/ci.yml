@@ -11,12 +11,12 @@ jobs:
       uses: actions/checkout@v2
 
     # ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client wget gnupg -y )
+    # wget -qO- https://get.docker.com/gpg | apt-key add -
     - name: Setup SSH Keys
       run: |
         echo "$SSH_KEY" > keynew.pem
         chmod 400 keynew.pem
         ssh-keygen -t rsa -C "$(hostname)" -f "$HOME/.ssh/id_rsa" -P ""
-        wget -qO- https://get.docker.com/gpg | apt-key add -
         eval $(ssh-agent -s)
         echo "$SSH_KEY" | tr -d '\r' | ssh-add -
         mkdir -p ~/.ssh
